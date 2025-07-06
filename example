@@ -1,0 +1,154 @@
+Imports System.Data.SqlClient
+Imports MySql.Data.MySqlClient
+
+Public Class Form1
+
+    Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=ApplicantsRecord")
+
+    Sub LoadData()
+        Dim adapter As New MySqlDataAdapter("SELECT * FROM Applicants", conn)
+        Dim table As New DataTable()
+        adapter.Fill(table)
+        DataGridView1.DataSource = table
+    End Sub
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        LoadData()
+    End Sub
+
+    Private Sub btnSubmit_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        conn.Open()
+
+        Dim cmd As New MySqlCommand("INSERT INTO Applicants (namee, email, department, phoneNumber) VALUES (@namee, @mail, @department, @phoneNumber)", conn)
+
+        cmd.Parameters.AddWithValue("@namee", TextBox1.Text)
+        cmd.Parameters.AddWithValue("@mail", TextBox2.Text)
+        cmd.Parameters.AddWithValue("@department", TextBox3.Text)
+        cmd.Parameters.AddWithValue("@phoneNumber", TextBox4.Text)
+
+        cmd.ExecuteNonQuery()
+        conn.Close()
+
+        LoadData()
+        MsgBox("Saved!")
+    End Sub
+
+End Class
+
+
+Imports System.Data.SqlClient
+Imports MySql.Data.MySqlClient
+
+Public Class Form1
+    ' Step 4 – Connection string
+    Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=PastryStore")
+    Dim selectedID As Integer = 0
+
+    ' Step 5 – Load data into DataGridView
+    Sub LoadData()
+        Dim adapter As New MySqlDataAdapter("SELECT * FROM Donuts", conn)
+        Dim table As New DataTable()
+        adapter.Fill(table)
+        DataGridView1.DataSource = table
+    End Sub
+
+    ' Step 6 – Load data on form load
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        LoadData()
+    End Sub
+
+    ' Step 7 – Insert data into MySQL when Add button is clicked
+    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        conn.Open()
+        Dim cmd As New MySqlCommand("INSERT INTO Donuts (donutName, flavor, price, quantity) VALUES (@donutName, @flavor, @price, @quantity)", conn)
+        cmd.Parameters.AddWithValue("@donutName", TextBox1.Text)
+        cmd.Parameters.AddWithValue("@flavor", TextBox2.Text)
+        cmd.Parameters.AddWithValue("@price", TextBox3.Text)
+        cmd.Parameters.AddWithValue("@quantity", TextBox4.Text)
+        cmd.ExecuteNonQuery()
+        conn.Close()
+        LoadData()
+        MsgBox("Donut Added!")
+    End Sub
+
+    ' Step 8 – Update data when Update button is clicked
+    Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        If selectedID = 0 Then
+            MsgBox("Please select a row to update!")
+        Else
+            conn.Open()
+            Dim cmd As New MySqlCommand("UPDATE Donuts SET donutName=@donutName, flavor=@flavor, price=@price, quantity=@quantity WHERE donutID=@id", conn)
+            cmd.Parameters.AddWithValue("@donutName", TextBox1.Text)
+            cmd.Parameters.AddWithValue("@flavor", TextBox2.Text)
+            cmd.Parameters.AddWithValue("@price", TextBox3.Text)
+            cmd.Parameters.AddWithValue("@quantity", TextBox4.Text)
+            cmd.Parameters.AddWithValue("@id", selectedID)
+            cmd.ExecuteNonQuery()
+            conn.Close()
+            LoadData()
+            MsgBox("Donut Updated!")
+        End If
+    End Sub
+
+    ' Step 9 – DataGridView click event to populate textboxes
+    Private Sub dgvData_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellClick
+        If e.RowIndex >= 0 Then
+            Dim row As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
+            selectedID = Convert.ToInt32(row.Cells("donutID").Value)
+            TextBox1.Text = row.Cells("donutName").Value.ToString()
+            TextBox2.Text = row.Cells("flavor").Value.ToString()
+            TextBox3.Text = row.Cells("price").Value.ToString()
+            TextBox4.Text = row.Cells("quantity").Value.ToString()
+        End If
+    End Sub
+End Class
+
+
+Imports System.Data.SqlClient
+Imports MySql.Data.MySqlClient
+Public Class Form1
+
+    Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=Student_Department")
+
+    Private Sub btnLoad_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        Dim adapter As New MySqlDataAdapter("SELECT * FROM students", conn)
+        Dim table As New DataTable()
+        adapter.Fill(table)
+        DataGridView1.DataSource = table
+    End Sub
+
+    Private Sub btnInsert_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        conn.Open()
+
+        Dim cmd As New MySqlCommand("INSERT INTO students (firstName, lastName, course, department) VALUES (@fname, @lname, @course, @dept)", conn)
+
+        cmd.Parameters.AddWithValue("@fname", TextBox1.Text)
+        cmd.Parameters.AddWithValue("@lname", TextBox2.Text)
+        cmd.Parameters.AddWithValue("@course", TextBox3.Text)
+        cmd.Parameters.AddWithValue("@dept", TextBox4.Text)
+
+        cmd.ExecuteNonQuery()
+        conn.Close()
+
+        Button1.PerformClick()
+        MsgBox("Student record inserted!")
+    End Sub
+
+    Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        conn.Open()
+
+        Dim cmd As New MySqlCommand("UPDATE students SET firstName = @fname, lastName = @lname, course = @course, department = @dept WHERE studentID = @id", conn)
+
+        cmd.Parameters.AddWithValue("@fname", TextBox1.Text)
+        cmd.Parameters.AddWithValue("@lname", TextBox2.Text)
+        cmd.Parameters.AddWithValue("@course", TextBox3.Text)
+        cmd.Parameters.AddWithValue("@dept", TextBox4.Text)
+        cmd.Parameters.AddWithValue("@id", TextBox5.Text)
+
+        cmd.ExecuteNonQuery()
+        conn.Close()
+
+        Button2.PerformClick()
+        MsgBox("Student record updated!")
+    End Sub
+End Class
